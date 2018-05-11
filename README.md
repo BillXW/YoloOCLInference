@@ -4,7 +4,7 @@ A very light weight inference engine of **tiny-YOLO** object detection system fo
 
 Example output with display enabled|
 :-------------------------:|
-:![](https://github.com/sat8/YoloOCLInference/blob/master/frame_000006.jpg)|
+:![](https://github.com/aktiger/YoloOCLInference/blob/master/frame_000006.jpg)|
 
 
 ## Background
@@ -15,7 +15,7 @@ This project has been deveoped to adapt **tiny-YOLO** object detection system fo
 
 Inference speed - Display disabled|
 :-------------------------:|
-:![](https://github.com/sat8/YoloOCLInference/blob/master/Capture.jpg)|
+:![](https://github.com/aktiger/YoloOCLInference/blob/master/Capture.PNG)|
 
 2. Implemented entirely in C++. No depenceny on exsting DNN frameworks.
 3. Optimizations include 
