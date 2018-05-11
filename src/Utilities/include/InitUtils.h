@@ -12,7 +12,8 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <Windows.h>
+#include "NetIniFileOp.h"
+//#include <Windows.h>
 
 class CIniReader
 {
@@ -23,6 +24,8 @@ public:
 	float ReadFloat(char* szSection, char* szKey, float fltDefaultValue);
 	bool ReadBoolean(char* szSection, char* szKey, bool bolDefaultValue);
 	void ReadString(char* szSection, char* szKey, const char* szDefaultValue, char* outValue);
+	NetIniFileOp iniOp;
+
 private:
 	char m_szFileName[255];
 	std::vector<std::string> m_Sections;
@@ -31,11 +34,13 @@ private:
 class CIniWriter
 {
 public:
-	CIniWriter(char* szFileName);
+	CIniWriter(const char* szFileName);
 	void WriteInteger(char* szSection, char* szKey, int iValue);
 	void WriteFloat(char* szSection, char* szKey, float fltValue);
 	void WriteBoolean(char* szSection, char* szKey, bool bolValue);
 	void WriteString(char* szSection, char* szKey, char* szValue);
+	NetIniFileOp iniOp;
+
 private:
 	char m_szFileName[255];
 };

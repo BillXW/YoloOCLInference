@@ -8,37 +8,37 @@ char* utils_cl_enum_to_string (cl_int value)
   switch (value)
   {
     /* cl_channel_order */
-    case 0x10B0: return "CL_R";
-    case 0x10B1: return "CL_A";
-    case 0x10B2: return "CL_RG";
-    case 0x10B3: return "CL_RA";
-    case 0x10B4: return "CL_RGB";
-    case 0x10B5: return "CL_RGBA";
-    case 0x10B6: return "CL_BGRA";
-    case 0x10B7: return "CL_ARGB";
-    case 0x10B8: return "CL_INTENSITY";
-    case 0x10B9: return "CL_LUMINANCE";
-    case 0x10BA: return "CL_Rx";
-    case 0x10BB: return "CL_RGx";
-    case 0x10BC: return "CL_RGBx";
+    case 0x10B0: return (char *)"CL_R";
+    case 0x10B1: return (char *)"CL_A";
+    case 0x10B2: return (char *)"CL_RG";
+    case 0x10B3: return (char *)"CL_RA";
+    case 0x10B4: return (char *)"CL_RGB";
+    case 0x10B5: return (char *)"CL_RGBA";
+    case 0x10B6: return (char *)"CL_BGRA";
+    case 0x10B7: return (char *)"CL_ARGB";
+    case 0x10B8: return (char *)"CL_INTENSITY";
+    case 0x10B9: return (char *)"CL_LUMINANCE";
+    case 0x10BA: return (char *)"CL_Rx";
+    case 0x10BB: return (char *)"CL_RGx";
+    case 0x10BC: return (char *)"CL_RGBx";
 
     /* cl_channel_type */
-    case 0x10D0: return "CL_SNORM_INT8";
-    case 0x10D1: return "CL_SNORM_INT16";
-    case 0x10D2: return "CL_UNORM_INT8";
-    case 0x10D3: return "CL_UNORM_INT16";
-    case 0x10D4: return "CL_UNORM_SHORT_565";
-    case 0x10D5: return "CL_UNORM_SHORT_555";
-    case 0x10D6: return "CL_UNORM_INT_101010";
-    case 0x10D7: return "CL_SIGNED_INT8";
-    case 0x10D8: return "CL_SIGNED_INT16";
-    case 0x10D9: return "CL_SIGNED_INT32";
-    case 0x10DA: return "CL_UNSIGNED_INT8";
-    case 0x10DB: return "CL_UNSIGNED_INT16";
-    case 0x10DC: return "CL_UNSIGNED_INT32";
-    case 0x10DD: return "CL_HALF_FLOAT";
-    case 0x10DE: return "CL_FLOAT";
-    default: return "Unknown value!";
+    case 0x10D0: return (char *)"CL_SNORM_INT8";
+    case 0x10D1: return (char *)"CL_SNORM_INT16";
+    case 0x10D2: return (char *)"CL_UNORM_INT8";
+    case 0x10D3: return (char *)"CL_UNORM_INT16";
+    case 0x10D4: return (char *)"CL_UNORM_SHORT_565";
+    case 0x10D5: return (char *)"CL_UNORM_SHORT_555";
+    case 0x10D6: return (char *)"CL_UNORM_INT_101010";
+    case 0x10D7: return (char *)"CL_SIGNED_INT8";
+    case 0x10D8: return (char *)"CL_SIGNED_INT16";
+    case 0x10D9: return (char *)"CL_SIGNED_INT32";
+    case 0x10DA: return (char *)"CL_UNSIGNED_INT8";
+    case 0x10DB: return (char *)"CL_UNSIGNED_INT16";
+    case 0x10DC: return (char *)"CL_UNSIGNED_INT32";
+    case 0x10DD: return (char *)"CL_HALF_FLOAT";
+    case 0x10DE: return (char *)"CL_FLOAT";
+    default: return (char *)"Unknown value!";
   }
 }
 
@@ -46,53 +46,53 @@ char* utils_get_ocl_error (cl_int err_code)
 {
   switch (err_code)
   {
-    case CL_SUCCESS:                          return "Success!";
-    case CL_DEVICE_NOT_FOUND:                 return "Device not found.";
-    case CL_DEVICE_NOT_AVAILABLE:             return "Device not available";
-    case CL_COMPILER_NOT_AVAILABLE:           return "Compiler not available";
-    case CL_MEM_OBJECT_ALLOCATION_FAILURE:    return "Memory object allocation failure";
-    case CL_OUT_OF_RESOURCES:                 return "Out of resources";
-    case CL_OUT_OF_HOST_MEMORY:               return "Out of host memory";
-    case CL_PROFILING_INFO_NOT_AVAILABLE:     return "Profiling information not available";
-    case CL_MEM_COPY_OVERLAP:                 return "Memory copy overlap";
-    case CL_IMAGE_FORMAT_MISMATCH:            return "Image format mismatch";
-    case CL_IMAGE_FORMAT_NOT_SUPPORTED:       return "Image format not supported";
-    case CL_BUILD_PROGRAM_FAILURE:            return "Program build failure";
-    case CL_MAP_FAILURE:                      return "Map failure";
-    case CL_INVALID_VALUE:                    return "Invalid value";
-    case CL_INVALID_DEVICE_TYPE:              return "Invalid device type";
-    case CL_INVALID_PLATFORM:                 return "Invalid platform";
-    case CL_INVALID_DEVICE:                   return "Invalid device";
-    case CL_INVALID_CONTEXT:                  return "Invalid context";
-    case CL_INVALID_QUEUE_PROPERTIES:         return "Invalid queue properties";
-    case CL_INVALID_COMMAND_QUEUE:            return "Invalid command queue";
-    case CL_INVALID_HOST_PTR:                 return "Invalid host pointer";
-    case CL_INVALID_MEM_OBJECT:               return "Invalid memory object";
-    case CL_INVALID_IMAGE_FORMAT_DESCRIPTOR:  return "Invalid image format descriptor";
-    case CL_INVALID_IMAGE_SIZE:               return "Invalid image size";
-    case CL_INVALID_SAMPLER:                  return "Invalid sampler";
-    case CL_INVALID_BINARY:                   return "Invalid binary";
-    case CL_INVALID_BUILD_OPTIONS:            return "Invalid build options";
-    case CL_INVALID_PROGRAM:                  return "Invalid program";
-    case CL_INVALID_PROGRAM_EXECUTABLE:       return "Invalid program executable";
-    case CL_INVALID_KERNEL_NAME:              return "Invalid kernel name";
-    case CL_INVALID_KERNEL_DEFINITION:        return "Invalid kernel definition";
-    case CL_INVALID_KERNEL:                   return "Invalid kernel";
-    case CL_INVALID_ARG_INDEX:                return "Invalid argument index";
-    case CL_INVALID_ARG_VALUE:                return "Invalid argument value";
-    case CL_INVALID_ARG_SIZE:                 return "Invalid argument size";
-    case CL_INVALID_KERNEL_ARGS:              return "Invalid kernel arguments";
-    case CL_INVALID_WORK_DIMENSION:           return "Invalid work dimension";
-    case CL_INVALID_WORK_GROUP_SIZE:          return "Invalid work group size";
-    case CL_INVALID_WORK_ITEM_SIZE:           return "Invalid work item size";
-    case CL_INVALID_GLOBAL_OFFSET:            return "Invalid global offset";
-    case CL_INVALID_EVENT_WAIT_LIST:          return "Invalid event wait list";
-    case CL_INVALID_EVENT:                    return "Invalid event";
-    case CL_INVALID_OPERATION:                return "Invalid operation";
-    case CL_INVALID_GL_OBJECT:                return "Invalid OpenGL object";
-    case CL_INVALID_BUFFER_SIZE:              return "Invalid buffer size";
-    case CL_INVALID_MIP_LEVEL:                return "Invalid mip-map level";
-    default:                                  return "Unknown error";
+    case CL_SUCCESS:                          return (char *)"Success!";
+    case CL_DEVICE_NOT_FOUND:                 return (char *)"Device not found.";
+    case CL_DEVICE_NOT_AVAILABLE:             return (char *)"Device not available";
+    case CL_COMPILER_NOT_AVAILABLE:           return (char *)"Compiler not available";
+    case CL_MEM_OBJECT_ALLOCATION_FAILURE:    return (char *)"Memory object allocation failure";
+    case CL_OUT_OF_RESOURCES:                 return (char *)"Out of resources";
+    case CL_OUT_OF_HOST_MEMORY:               return (char *)"Out of host memory";
+    case CL_PROFILING_INFO_NOT_AVAILABLE:     return (char *)"Profiling information not available";
+    case CL_MEM_COPY_OVERLAP:                 return (char *)"Memory copy overlap";
+    case CL_IMAGE_FORMAT_MISMATCH:            return (char *)"Image format mismatch";
+    case CL_IMAGE_FORMAT_NOT_SUPPORTED:       return (char *)"Image format not supported";
+    case CL_BUILD_PROGRAM_FAILURE:            return (char *)"Program build failure";
+    case CL_MAP_FAILURE:                      return (char *)"Map failure";
+    case CL_INVALID_VALUE:                    return (char *)"Invalid value";
+    case CL_INVALID_DEVICE_TYPE:              return (char *)"Invalid device type";
+    case CL_INVALID_PLATFORM:                 return (char *)"Invalid platform";
+    case CL_INVALID_DEVICE:                   return (char *)"Invalid device";
+    case CL_INVALID_CONTEXT:                  return (char *)"Invalid context";
+    case CL_INVALID_QUEUE_PROPERTIES:         return (char *)"Invalid queue properties";
+    case CL_INVALID_COMMAND_QUEUE:            return (char *)"Invalid command queue";
+    case CL_INVALID_HOST_PTR:                 return (char *)"Invalid host pointer";
+    case CL_INVALID_MEM_OBJECT:               return (char *)"Invalid memory object";
+    case CL_INVALID_IMAGE_FORMAT_DESCRIPTOR:  return (char *)"Invalid image format descriptor";
+    case CL_INVALID_IMAGE_SIZE:               return (char *)"Invalid image size";
+    case CL_INVALID_SAMPLER:                  return (char *)"Invalid sampler";
+    case CL_INVALID_BINARY:                   return (char *)"Invalid binary";
+    case CL_INVALID_BUILD_OPTIONS:            return (char *) "Invalid build options";
+    case CL_INVALID_PROGRAM:                  return (char *)"Invalid program";
+    case CL_INVALID_PROGRAM_EXECUTABLE:       return (char *)"Invalid program executable";
+    case CL_INVALID_KERNEL_NAME:              return (char *)"Invalid kernel name";
+    case CL_INVALID_KERNEL_DEFINITION:        return (char *)"Invalid kernel definition";
+    case CL_INVALID_KERNEL:                   return (char *)"Invalid kernel";
+    case CL_INVALID_ARG_INDEX:                return (char *)"Invalid argument index";
+    case CL_INVALID_ARG_VALUE:                return (char *)"Invalid argument value";
+    case CL_INVALID_ARG_SIZE:                 return (char *)"Invalid argument size";
+    case CL_INVALID_KERNEL_ARGS:              return (char *)"Invalid kernel arguments";
+    case CL_INVALID_WORK_DIMENSION:           return (char *)"Invalid work dimension";
+    case CL_INVALID_WORK_GROUP_SIZE:          return (char *)"Invalid work group size";
+    case CL_INVALID_WORK_ITEM_SIZE:           return (char *)"Invalid work item size";
+    case CL_INVALID_GLOBAL_OFFSET:            return (char *)"Invalid global offset";
+    case CL_INVALID_EVENT_WAIT_LIST:          return (char *)"Invalid event wait list";
+    case CL_INVALID_EVENT:                    return (char *)"Invalid event";
+    case CL_INVALID_OPERATION:                return (char *)"Invalid operation";
+    case CL_INVALID_GL_OBJECT:                return (char *)"Invalid OpenGL object";
+    case CL_INVALID_BUFFER_SIZE:              return (char *)"Invalid buffer size";
+    case CL_INVALID_MIP_LEVEL:                return (char *)"Invalid mip-map level";
+    default:                                  return (char *)"Unknown error";
   }
 } 
 

@@ -15,9 +15,13 @@ limitations under the License.*/
 
 
 #include <stdio.h>
-#include <windows.h>
-#include "Shlwapi.h"
+//#include <windows.h>
+//#include "Shlwapi.h"
 #include "YoloOCLDNN.h"
+#include "boost/filesystem.hpp"
+using boost::filesystem::exists;
+
+
 
 #ifdef _DEBUG
 #include <vld.h>
@@ -29,18 +33,18 @@ int main(int argc, char* argv[]) {
 
 	printf("YoloOCLInference Started..\n");
 
-	char	labelsFile[MAX_PATH];
-	char	configFile[MAX_PATH];
-	char	weightsFile[MAX_PATH];
+	char	labelsFile[PATH_MAX];
+	char	configFile[PATH_MAX];
+	char	weightsFile[PATH_MAX];
 	string	currentDir = ExePath();
 
-	char	inputImage[MAX_PATH];
+	char	inputImage[PATH_MAX];
 	int		enableDisplay = 0;
 	int		saveOutput = 0;
 
 	for (int i = 1; i < argc; i++) {
 
-		if (stricmp(argv[i], "-input") == 0) {
+		if (strcasecmp(argv[i], "-input") == 0) {
 
 			if (++i >= argc) {
 
@@ -49,7 +53,7 @@ int main(int argc, char* argv[]) {
 			}
 			strcpy(inputImage, argv[i]);
 		}
-		else if (stricmp(argv[i], "-display") == 0) {
+		else if (strcasecmp(argv[i], "-display") == 0) {
 
 			if (++i >= argc || sscanf(argv[i], "%d", &enableDisplay) != 1) {
 
@@ -57,7 +61,7 @@ int main(int argc, char* argv[]) {
 				return -1;
 			}
 		}
-		else if (stricmp(argv[i], "-save") == 0) {
+		else if (strcasecmp(argv[i], "-save") == 0) {
 
 			if (++i >= argc || sscanf(argv[i], "%d", &saveOutput) != 1) {
 
@@ -67,15 +71,15 @@ int main(int argc, char* argv[]) {
 		}
 	}
 	
-	if (!PathFileExists(inputImage)) {
+	if (!exists(inputImage)) {
 
 		printf("ERROR - Input file is not valid. Terminating...\n");
 		return -1;
 	}
 
-	sprintf(labelsFile, "%s\\coco.names", currentDir.c_str());
-	sprintf(configFile, "%s\\tiny-yolo.cfg", currentDir.c_str());
-	sprintf(weightsFile, "%s\\tiny-yolo.weights", currentDir.c_str());
+	sprintf(labelsFile, "%s/coco.names", currentDir.c_str());
+	sprintf(configFile, "%s/tiny-yolo.cfg", currentDir.c_str());
+	sprintf(weightsFile, "%s/tiny-yolo.weights", currentDir.c_str());
 	
 	m_YOLODeepNNObj = new YOLONeuralNet(labelsFile, configFile, weightsFile, enableDisplay, saveOutput);
 	m_YOLODeepNNObj->Initialize();

@@ -14,14 +14,26 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 #include "OCLManager.h"
+#include <limits.h>
+#include <unistd.h>
+
 
 #define BLOCK 8
 
 string ExePath() {
 
-	char buffer[MAX_PATH];
-	GetModuleFileName(NULL, buffer, MAX_PATH);
-	string::size_type pos = string(buffer).find_last_of("\\/");
+	char buffer[PATH_MAX];
+    ssize_t nbytes;
+
+	//GetModuleFileName(NULL, buffer, PATH_MAX);
+    nbytes = readlink("/proc/self/exe", buffer, PATH_MAX);
+
+    if(nbytes == -1) {
+        perror("readlink failure");
+        exit(EXIT_FAILURE);
+    }
+
+	string::size_type pos = string(buffer).find_last_of("/");
 	return string(buffer).substr(0, pos);
 }
 
@@ -65,7 +77,7 @@ OCLManager::~OCLManager() {
 
 int OCLManager::Initialize() {
 
-	std::string file = ExePath() + "\\DeepNNFP32.cl";
+	std::string file = ExePath() + "/../src/Kernels/DeepNNFP32.cl";
 	std::vector<std::string> kernelFiles;
 	kernelFiles.push_back(file);
 
@@ -76,13 +88,20 @@ int OCLManager::Initialize() {
 	for( int i = 0; i < NN_MAX_KERNEL_COUNT; i++ )
 		m_OpenCLKernels[i] = m_OpenCLProgram->createKernelLauncher(NN_KERNEL_NAMES[i]);
 
-	m_LockMutex = CreateMutex(NULL, FALSE, NULL);
+	//m_LockMutex = CreateMutex(NULL, FALSE, NULL);
+	//int ret = pthread_mutex_init(&m_LockMutex, NULL);
+	/*
+	if(0 != ret) {
+		printf("pthread_mutex_init error, system will exit!");
+		exit(-123);
+	}*/
 
-	/*if( pthread_mutex_init(&m_LockMutex, NULL) != 0 ) {
+
+	if( pthread_mutex_init(&m_LockMutex, NULL) != 0 ) {
 	    printf("ERROR - OCLWrapper::Initialize() Mutex initialization error \n");
 	    m_Status = OCL_STATUS_MUTEX_ERROR;
 	    return m_Status;
-	}*/
+	}
 
 
 	m_LockStatus = OCL_LOCK_RELEASE;
@@ -92,11 +111,16 @@ int OCLManager::Initialize() {
 
 int OCLManager::Finalize() {
 
-	//if(m_LockMutex != NULL)
+	/*
+	if(m_LockMutex != NULL) {
+    	CloseHandle(m_LockMutex);
+    	}
+    */
+
 	if (m_Status != OCL_STATUS_MUTEX_ERROR) {
 	
-		//pthread_mutex_destroy(&m_LockMutex);
-		CloseHandle(m_LockMutex);
+		pthread_mutex_destroy(&m_LockMutex);
+
 	}
 
 	m_Status = OCL_STATUS_FINALIZED;
@@ -105,14 +129,14 @@ int OCLManager::Finalize() {
 
 void OCLManager::SetLock() {
 
-	//pthread_mutex_lock(&m_LockMutex);
-	WaitForSingleObject(m_LockMutex, INFINITE);
+	pthread_mutex_lock(&m_LockMutex);
+	//WaitForSingleObject(m_LockMutex, INFINITE);
 }
 
 void OCLManager::ReleaseLock() {
 
-	//pthread_mutex_unlock(&m_LockMutex);
-	ReleaseMutex(m_LockMutex);
+	pthread_mutex_unlock(&m_LockMutex);
+	//ReleaseMutex(m_LockMutex);
 }
 
 StructPinnedOCLBuffer* OCLManager::InitializePinnedFloatArray(size_t numItems) {

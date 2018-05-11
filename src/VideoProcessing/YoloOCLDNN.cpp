@@ -14,8 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.*/
 
 #include "YoloOCLDNN.h"
+#include <boost/filesystem.hpp>
+#include <opencv2/opencv.hpp>
 
-#define strcpy strcpy_s
+using boost::filesystem::create_directories;
+
+
+#define strcpy strcpy
 
 float BBOX_COLORS[6][3] = { { 1,0,1 },{ 0,0,1 },{ 0,1,1 },{ 0,1,0 },{ 1,1,0 },{ 1,0,0 } };
 
@@ -874,7 +879,7 @@ bool YOLONeuralNet::LoadInputImage(char const* fileName) {
 		fprintf(stderr, "Cannot load image \"%s\"\n", fileName);
 		char buff[256];
 		sprintf(buff, "echo %s >> bad.list", fileName);
-		system(buff);
+		std::system(buff);
 		return false;
 	}
 
@@ -988,8 +993,15 @@ void DrawDetections(StructImage *im, int num, float thresh, StructDetectionBBox 
 			overlayRect.width = right - left;
 			overlayRect.height = bot - top;
 
-			cv::rectangle((cv::Mat)renderImage, overlayRect, cv::Scalar(blue * 255, green * 255, red * 255), 2);
-			//draw_box_width(im, left, top, right, bot, width, red, green, blue);
+			cv::Mat tmpMat(renderImage);
+
+
+			//cv::rectangle((cv::Mat &)renderImage, overlayRect, cv::Scalar(blue * 255, green * 255, red * 255), 2);
+			cv::rectangle(tmpMat, overlayRect, cv::Scalar(blue * 255, green * 255, red * 255), 2);
+
+
+
+            //draw_box_width(im, left, top, right, bot, width, red, green, blue);
 		}
 	}
 }
@@ -1058,10 +1070,12 @@ void YOLONeuralNet::ComputeYOLONNOutput(char* inputFile) {
 	m_CurrentIplImage = NULL;
 	
 
-	sprintf(outFolder, "%s\\output", ExePath().c_str());
-	CreateDirectory(outFolder, NULL);
+	sprintf(outFolder, "%s/output", ExePath().c_str());
+	//CreateDirectory(outFolder, NULL);
+	create_directories(outFolder);
 
 	sprintf(overlayDeviceProp, "Device : %s", m_OCLDeviceName);
+
 	StructYOLODeepNNLayer *finalLayer = &m_YOLODeepNN->m_Layers[m_YOLODeepNN->m_TotalLayers - 1];
 
 	StructDetectionBBox *detBBoxes = (StructDetectionBBox*)calloc(finalLayer->m_W * finalLayer->m_H * finalLayer->m_N, sizeof(StructDetectionBBox));
@@ -1070,7 +1084,7 @@ void YOLONeuralNet::ComputeYOLONNOutput(char* inputFile) {
 	for (int j = 0; j < finalLayer->m_W * finalLayer->m_H * finalLayer->m_N; ++j)
 		detProbScores[j] = (float*)calloc(finalLayer->m_Classes, sizeof(float));
 
-	int inputSize = m_YOLODeepNN->m_Layers[0].m_Inputs * m_YOLODeepNN->m_BatchSize;
+	size_t inputSize = m_YOLODeepNN->m_Layers[0].m_Inputs * m_YOLODeepNN->m_BatchSize;
 
 
 	sprintf(fileName, inputFile);

@@ -19,7 +19,7 @@ limitations under the License.*/
 
 #include <chrono>
 #include <algorithm>
-#include <windows.h>
+//#include <windows.h>
 #include <string>
 #include <iostream>
 #include "CL/cl.h"
@@ -27,6 +27,8 @@ limitations under the License.*/
 #include "GlobalDefines.h"
 #include "clblast.h"
 //#include "clblast_half.h"
+#include <pthread.h>
+
 
 #define PINNED_MEM_OUTPUT
 
@@ -118,7 +120,8 @@ private:
 	int					m_Status;
 	int					m_LockStatus;
 	int					m_CallerId;
-	HANDLE				m_LockMutex;
+	//HANDLE				m_LockMutex;
+    pthread_mutex_t 	m_LockMutex;
 	CLSetup				m_OpenCLSetup;
 	KernelLauncher*		m_OpenCLKernels[NN_MAX_KERNEL_COUNT];
 	char				m_DeviceName[256];
