@@ -16,42 +16,10 @@ CIniReader::CIniReader(char* szFileName) :iniOp(szFileName){
 
 	memset(m_szFileName, 0x00, 255);
 	memcpy(m_szFileName, szFileName, strlen(szFileName));
+	this->m_Sections = iniOp.getAllSections();
 }
 
 std::vector<std::string> CIniReader::ReadSections() {
-
-	char sectionNames[1024];
-
-	int nSectionNum = 0;
-	m_Sections.clear();
-
-
-	//DWORD retVal = GetPrivateProfileSectionNamesA(sectionNames, 1024, m_szFileName);
-    DWORD  retVal = 0;
-	/*for (char * p = sectionNames; *p; ++p)
-	{
-		std::string sectionName(p);
-		m_Sections.push_back(sectionName);
-		p += sectionName.size();
-	}*/
-
-    m_Sections.push_back("net");
-    m_Sections.push_back("convolutional_0");
-    m_Sections.push_back("maxpool_0");
-    m_Sections.push_back("convolutional_1");
-    m_Sections.push_back("maxpool_1");
-    m_Sections.push_back("convolutional_2");
-    m_Sections.push_back("maxpool_2");
-    m_Sections.push_back("convolutional_3");
-    m_Sections.push_back("maxpool_3");
-    m_Sections.push_back("convolutional_4");
-    m_Sections.push_back("maxpool_4");
-    m_Sections.push_back("convolutional_5");
-    m_Sections.push_back("maxpool_5");
-    m_Sections.push_back("convolutional_6");
-    m_Sections.push_back("convolutional_7");
-    m_Sections.push_back("convolutional_8");
-    m_Sections.push_back("region_0");
 
 	return m_Sections;
 }
