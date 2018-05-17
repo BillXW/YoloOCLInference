@@ -258,19 +258,16 @@ float OCLManager::ConvertImageToColumnArray(OCLBuffer *im, int channels, int hei
     m_OpenCLKernels[KERNEL_IDX]->arg(8, width_col);
     m_OpenCLKernels[KERNEL_IDX]->arg(9, data_col->getMem());
 
-    if (0 == KERNEL_IDX) {
-        m_OpenCLKernels[KERNEL_IDX]->arg(10, debug->getMem());
-    }
 
+    m_OpenCLKernels[KERNEL_IDX]->arg(10, debug->getMem());
 
     float time = m_OpenCLKernels[KERNEL_IDX]->run(PROFILE_KERNELS, BLOCK_KERNEL_EXEC);
 
-    if (0 == KERNEL_IDX) {
     int *Debug_cpu = new int[3];
     OCLManager::ReadIntArray(Debug_cpu, debug, 3);
     std::cout << "get_local_size(0):" << Debug_cpu[0] << ", get_num_groups(0): " << Debug_cpu[1]
               << ", get_global_id(0): " << Debug_cpu[2] << std::endl;
-    }
+
 
     return time;
 }
