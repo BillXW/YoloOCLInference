@@ -21,9 +21,15 @@ typedef enum {
 
 __kernel void image2columarray3x3(int n, __global float* data_im,
 	int height, int width, int ksize, const int pad, int stride, int height_col, int width_col, 
-	__global float *data_col) { 
+	__global float *data_col,__global int * debug) {
 
 	int index = get_global_id(0);
+	int local_size = get_local_size(0);
+	int num_group = get_num_groups(0);
+    debug[0] = local_size;
+    debug[1] = num_group;
+    debug[2] = index;
+
 	int stepSize = get_local_size(0) * get_num_groups(0);
 	int w_out, h_index, h_out, channel_in, channel_out, h_in, w_in, i, j, h, w;
 	

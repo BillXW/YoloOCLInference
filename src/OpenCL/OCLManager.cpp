@@ -16,7 +16,7 @@ limitations under the License.*/
 #include "OCLManager.h"
 #include <limits.h>
 #include <unistd.h>
-
+#include "buffer.h"
 
 #define BLOCK 8
 
@@ -158,7 +158,7 @@ void OCLManager::FinalizePinnedFloatArray(StructPinnedOCLBuffer *oclPinnedBuffer
 
 OCLBuffer* OCLManager::InitializeFloatArray(float *inArray, size_t numItems) {
 
-	size_t totalSize = sizeof(float) * numItems;
+	size_t totalSize =  sizeof(float) * numItems;
 	OCLBuffer* outBuffer = m_OpenCLSetup.createBuffer(totalSize, CL_MEM_READ_WRITE, NULL);
 
 	if (inArray != NULL)
@@ -233,29 +233,46 @@ float OCLManager::ResetArray(int N, OCLBuffer *inArray, OCLBuffer *biasArray, in
 float OCLManager::ConvertImageToColumnArray(OCLBuffer *im, int channels, int height, int width,
 				int ksize, int stride, int pad, OCLBuffer *data_col) {
 
-	int LOCAL_BLOCK = BLOCK;// / 2;
 
-	int height_col = (height + 2 * pad - ksize) / stride + 1;
-	int width_col = (width + 2 * pad - ksize) / stride + 1;
-	int num_kernels = channels * height_col * width_col;
+    OCLBuffer *debug = InitializeIntArray(3);
+    int LOCAL_BLOCK = BLOCK;// / 2;
 
-	int globalDimX = ((num_kernels + LOCAL_BLOCK) / LOCAL_BLOCK) * LOCAL_BLOCK;
+    int height_col = (height + 2 * pad - ksize) / stride + 1;
+    int width_col = (width + 2 * pad - ksize) / stride + 1;
+    int num_kernels = channels * height_col * width_col;
 
-	int KERNEL_IDX = (ksize == 3) ? NN_KERNEL_IDX_IM2COL3X3 : NN_KERNEL_IDX_IM2COL1X1;
+    int globalDimX = ((num_kernels + LOCAL_BLOCK) / LOCAL_BLOCK) * LOCAL_BLOCK;
 
-	m_OpenCLKernels[KERNEL_IDX]->pGlobal(globalDimX)->pLocal(LOCAL_BLOCK);
-	//m_OpenCLKernels[KERNEL_IDX]->pGlobal(globalDimX, filtSize)->pLocal(LOCAL_BLOCK, 1);
-	m_OpenCLKernels[KERNEL_IDX]->arg(0, num_kernels);
-	m_OpenCLKernels[KERNEL_IDX]->arg(1, im->getMem());
-	m_OpenCLKernels[KERNEL_IDX]->arg(2, height);
-	m_OpenCLKernels[KERNEL_IDX]->arg(3, width);
-	m_OpenCLKernels[KERNEL_IDX]->arg(4, ksize);
-	m_OpenCLKernels[KERNEL_IDX]->arg(5, pad);
-	m_OpenCLKernels[KERNEL_IDX]->arg(6, stride);
-	m_OpenCLKernels[KERNEL_IDX]->arg(7, height_col);
-	m_OpenCLKernels[KERNEL_IDX]->arg(8, width_col);
-	m_OpenCLKernels[KERNEL_IDX]->arg(9, data_col->getMem());
-	return m_OpenCLKernels[KERNEL_IDX]->run(PROFILE_KERNELS, BLOCK_KERNEL_EXEC);
+    int KERNEL_IDX = (ksize == 3) ? NN_KERNEL_IDX_IM2COL3X3 : NN_KERNEL_IDX_IM2COL1X1;
+
+    m_OpenCLKernels[KERNEL_IDX]->pGlobal(globalDimX)->pLocal(LOCAL_BLOCK);
+    //m_OpenCLKernels[KERNEL_IDX]->pGlobal(globalDimX, filtSize)->pLocal(LOCAL_BLOCK, 1);
+    m_OpenCLKernels[KERNEL_IDX]->arg(0, num_kernels);
+    m_OpenCLKernels[KERNEL_IDX]->arg(1, im->getMem());
+    m_OpenCLKernels[KERNEL_IDX]->arg(2, height);
+    m_OpenCLKernels[KERNEL_IDX]->arg(3, width);
+    m_OpenCLKernels[KERNEL_IDX]->arg(4, ksize);
+    m_OpenCLKernels[KERNEL_IDX]->arg(5, pad);
+    m_OpenCLKernels[KERNEL_IDX]->arg(6, stride);
+    m_OpenCLKernels[KERNEL_IDX]->arg(7, height_col);
+    m_OpenCLKernels[KERNEL_IDX]->arg(8, width_col);
+    m_OpenCLKernels[KERNEL_IDX]->arg(9, data_col->getMem());
+
+    if (0 == KERNEL_IDX) {
+        m_OpenCLKernels[KERNEL_IDX]->arg(10, debug->getMem());
+    }
+
+
+    float time = m_OpenCLKernels[KERNEL_IDX]->run(PROFILE_KERNELS, BLOCK_KERNEL_EXEC);
+
+    if (0 == KERNEL_IDX) {
+    int *Debug_cpu = new int[3];
+    OCLManager::ReadIntArray(Debug_cpu, debug, 3);
+    std::cout << "get_local_size(0):" << Debug_cpu[0] << ", get_num_groups(0): " << Debug_cpu[1]
+              << ", get_global_id(0): " << Debug_cpu[2] << std::endl;
+    }
+
+    return time;
 }
 
 float OCLManager::ComputeGEMM(bool isATransponsed, bool isBTransposed, const size_t m, const size_t n, const size_t k,

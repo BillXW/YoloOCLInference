@@ -34,7 +34,7 @@ int CIniReader::ReadInteger(char* szSection, char* szKey, int iDefaultValue) {
     try {
         iResult =  atoi(iniOp.Get(section_key).c_str());
     } catch (boost::exception &exception1) {
-        std::cout << "cfg file no such node, default value will be used!\n" << std::endl;
+        //std::cout << "cfg file no such node, default value will be used!\n" << std::endl;
        // std::cerr << boost::diagnostic_information(exception1) ;
         iResult = iDefaultValue;
     }

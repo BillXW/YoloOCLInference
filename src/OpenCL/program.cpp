@@ -129,6 +129,12 @@ void Program::buildProgram()
         //DEBUG_VALUE("Kernel Name: ", name);
     }
 
+    /*
+     * for(auto iter=_kernels.begin(); iter!=_kernels.end(); iter++) {
+        std::cout << "Kernel Name is :" << iter->first << std::endl;
+    }
+     */
+
     _buildState = true;
 
 }
