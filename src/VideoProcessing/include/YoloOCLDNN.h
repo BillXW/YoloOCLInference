@@ -92,16 +92,16 @@ typedef struct  {
 	int								m_Flipped;
 	int								m_Inputs;
 	int								m_Outputs;
-	int								m_H;
-	int								m_W;
-	int								m_C;
-	int								m_OutH;
-	int								m_OutW;
-	int								m_OutC;
-	int								m_N;
-	int								m_Size;
-	int								m_Stride;
-	int								m_Pad;
+	int								m_H; // input heighth
+	int								m_W; // input weighth
+	int								m_C; // Number of  input Channels
+	int								m_OutH;  // output heighth
+	int								m_OutW; // output widthth
+	int								m_OutC;  // number of output channels
+	int								m_N;     // number of ouput channels
+	int								m_Size;  // kernel size
+	int								m_Stride;  //kernel stride
+	int								m_Pad;   // kernel padding
 	int								m_Classes;
 	int								m_Coords;
 	int								m_ClassFix;
