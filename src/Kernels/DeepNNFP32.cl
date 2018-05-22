@@ -477,6 +477,17 @@ __kernel void maxpool(int n, int in_h, int in_w, int in_c, int stride, int size,
 	}
 }
 
+
+
+__kernel void image2columarray7x7(int n, __global float* data_im,
+                                  int height, int width, int ksize, const int pad, int stride, int height_col, int width_col,
+                                  __global float *data_col,__global int * debug) {
+
+
+}
+
+
+
 //resetIdx = index * resetStepSize;
 //float8 localOutput = (float8)0;
 //vstore8(localOutput, 0, &reset_arr[resetIdx]);

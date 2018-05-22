@@ -40,7 +40,7 @@ limitations under the License.*/
 #define OCL_LOCK_RELEASE          2
 
 //Deep NN related
-#define NN_MAX_KERNEL_COUNT				13
+#define NN_MAX_KERNEL_COUNT				14
 #define NN_KERNEL_IDX_IM2COL3X3			0
 #define NN_KERNEL_IDX_IM2COL1X1			1
 #define NN_KERNEL_IDX_NORMARR			2
@@ -54,6 +54,8 @@ limitations under the License.*/
 #define NN_KERNEL_IDX_SOFTMAX			10
 #define NN_KERNEL_IDX_MAXPOOL			11
 #define NN_KERNEL_IDX_RESETARR			12
+#define NN_KERNEL_IDX_IM2COL7X7         13
+
 
 
 

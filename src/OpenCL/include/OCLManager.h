@@ -32,7 +32,7 @@ limitations under the License.*/
 
 #define PINNED_MEM_OUTPUT
 
-#define PROFILE_KERNELS		0
+#define PROFILE_KERNELS		1
 #define BLOCK_KERNEL_EXEC	0
 
 
@@ -64,7 +64,9 @@ static const char* NN_KERNEL_NAMES[NN_MAX_KERNEL_COUNT] = {
 	"flattenarray",
 	"softmax",
 	"maxpool",
-	"resetarray"
+	"resetarray",
+	"image2columarray7x7"
+
 };
 
 class OCLManager {

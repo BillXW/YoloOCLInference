@@ -243,7 +243,8 @@ float OCLManager::ConvertImageToColumnArray(OCLBuffer *im, int channels, int hei
 
     int globalDimX = ((num_kernels + LOCAL_BLOCK) / LOCAL_BLOCK) * LOCAL_BLOCK;
 
-    int KERNEL_IDX = (ksize == 3) ? NN_KERNEL_IDX_IM2COL3X3 : NN_KERNEL_IDX_IM2COL1X1;
+    //int KERNEL_IDX = (ksize == 3) ? NN_KERNEL_IDX_IM2COL3X3 : NN_KERNEL_IDX_IM2COL1X1;
+    int KERNEL_IDX = (ksize == 3) ? NN_KERNEL_IDX_IM2COL3X3 : ((ksize ==7) ? NN_KERNEL_IDX_IM2COL7X7 : NN_KERNEL_IDX_IM2COL1X1);
 
     m_OpenCLKernels[KERNEL_IDX]->pGlobal(globalDimX)->pLocal(LOCAL_BLOCK);
     //m_OpenCLKernels[KERNEL_IDX]->pGlobal(globalDimX, filtSize)->pLocal(LOCAL_BLOCK, 1);
