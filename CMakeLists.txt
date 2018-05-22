@@ -14,13 +14,8 @@ find_package(OpenCV REQUIRED)
 #include_directories(3rdparty/CLBlast/include)
 
 
-include_directories(/usr/local/include)
-include_directories(src/OpenCL/include)
-include_directories(/usr/local/cuda-8.0/include)
-include_directories(/usr/include/cairo)
-include_directories(src/Utilities/include)
-include_directories(src/VideoProcessing/include)
-include_directories(${Boost_INCLUDE_DIRS})
+include_directories("/usr/local/include" "src/OpenCL/include" "/usr/local/cuda-8.0/include" "/usr/include/cairo"
+        "src/Utilities/include" "src/VideoProcessing/include" "${Boost_INCLUDE_DIRS}")
 
 
 add_executable(YoloOCLInference
@@ -28,8 +23,6 @@ add_executable(YoloOCLInference
         /usr/local/include/clblast.h
         /usr/local/include/clblast_c.h
         /usr/local/include/clblast_half.h
-        #/usr/local/include/clblast_netlib_c.h
-
         src/Kernels/DeepNNFP16.cl
         src/Kernels/DeepNNFP32.cl
         src/OpenCL/include/buffer.h
@@ -68,7 +61,6 @@ add_executable(YoloOCLInference
         frame_000006.jpg
         LICENSE
         README.md src/Utilities/include/NetIniFileOp.h)
-
 
 target_link_libraries(YoloOCLInference
         /usr/lib/x86_64-linux-gnu/libcairo.so

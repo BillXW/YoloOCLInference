@@ -76,11 +76,12 @@ float KernelLauncher::run(bool profile, bool block)
 	if (status != CL_SUCCESS) {
 
 		char * kernelName = (char*)_kernel_name.c_str();
+		printf("CL_Status is not CL_SUCCESS\n");
 		int z = 0;
 		z++;
 	}
 
-	//DEBUG_CL(status);
+	DEBUG_CL(status);
 	return total;
 }
 KernelLauncher& KernelLauncher::global(const int g) {
