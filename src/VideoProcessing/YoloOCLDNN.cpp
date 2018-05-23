@@ -1204,10 +1204,21 @@ void YOLONeuralNet::ComputeYOLONNOutput(char* inputFile) {
 	oclManager->ReadFloatArray(verfArray, inBuffer, numItems);
 	
 	std::ofstream myfile(fileName);
+	int cc = 0;
 	if (myfile.is_open()) {
 
-		for (int count = 0; count < numItems; count++)
+		for (int count = 0; count < numItems; count++){
+
 			myfile << verfArray[count] << "\n";
+			if(verfArray[count] == 0) {
+		//		std::cout << verfArray[count] << std::endl;
+				cc++;
+			}
+		}
+		float percent = (float)cc/(float)numItems;
+
+		std::cout << "In " << fileName << ". Total count is : "<< numItems  <<";   Zero count is :" << cc << ". Percent is: "
+                       << percent << std::endl;
 		myfile.close();
 	}
 	free(verfArray);

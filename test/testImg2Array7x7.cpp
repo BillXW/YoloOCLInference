@@ -12,9 +12,12 @@
 #include <YoloOCLDNN.h>
 #include "buffer.h"
 #include "YoloOCLDNN.h"
+#include <cstdlib>
+
 using  namespace std;
 
 #define DEL_(name) do { if( NULL != (name) ) { delete (name); (name) = NULL; } } while(0)
+#define rand01 rand() / double(RAND_MAX) ;
 
 
 //YOLONeuralNet	*m_YOLODeepNNObj;
@@ -23,6 +26,16 @@ using  namespace std;
     BOOST_CHECK_EQUAL(1,1);
 }*/
 
+int zeroCount(float *array, int len){
+    int count = 0;
+    for (int i =0; i <len; i++) {
+        if (array[i] == 0) {
+            count++;
+        }
+    }
+    return count;
+}
+
 
 BOOST_AUTO_TEST_CASE(kernel7x7) {
     StructImage	*m_ResizedImage = new StructImage();
@@ -30,74 +43,90 @@ BOOST_AUTO_TEST_CASE(kernel7x7) {
     m_ResizedImage->m_C = 3;
     m_ResizedImage->m_H = 416;
     m_ResizedImage->m_W = 416;
+    srand(1234);
 
     int flatNumIn = m_ResizedImage->m_C *  m_ResizedImage->m_H *  m_ResizedImage->m_W;
     int flatNumOut= m_ResizedImage->m_C *  m_ResizedImage->m_H *  m_ResizedImage->m_W;
 
+    int data_img_len = 3*416*416;
+
     float *data_img = new float [3*416*416];
+
     float *data_in = new float [27*416*416];  // the input to GEMM will be 9 times bigger than data_img
-    float *data_col = new float [flatNumOut];
-
-
 
     float *data_out= new float [16*416*416];
     float *kernel_weights = new float[16*27];
 
-    for(int i =0; i<3; i++){
-        for(int j=0; j<416*416; j++){
-            data_img[i*3+j] = (i+1)/10.f;
+
+
+    int data_img_count = 0;
+    for(int i =0; i<3; i++) {
+        for(int j=0; j < 173056; j++){
+            //data_img[i*3+j] = (i+1)/1.f;
+            data_img[i*173056+j] = 111;
+            data_img_count ++ ;
         }
-
     }
-
+    std::cout << "data_img zero count is: " << zeroCount(data_img, data_img_len) << ". data_img_count: " << data_img_count << std::endl;
 
     for(int i=0; i<27; i++) {
         for(int j=0; j<173056; j++){
-            data_in[i*27+j] = (i+1)/10.0f;
+            data_in[i*173056+j] = 222;
+        }
+    }
+    std::cout << "data_in zero count is: " << zeroCount(data_in, 27*416*416) << std::endl;
+
+    for(int i=0; i<16; i++){
+        for(int j=0; j<173056; j++){
+            float tmp = rand()%255 + 100;
+            data_out[i*173056 + j] = 333;
         }
     }
 
+    std::cout << "data_out zero count is: " << zeroCount(data_out, 16*416*416) << std::endl;
+
+    int count = 0;
     for(int i =0; i<16; i++) {
         for(int j=0; j<27; j++) {
-
-            kernel_weights[i*16+j] = (i*10)/1.0f;
+            kernel_weights[i*27+j] = 444;
+            count++;
         }
     }
-
-
-
+    std::cout << "kernel_weights zero count is: " << zeroCount(kernel_weights, 16*27)<< std::endl;
 
     m_ResizedImage->m_DataArray = data_in;
 
     OCLManager *manager = new OCLManager();
     manager->Initialize();
 
-    OCLBuffer *bufImg = manager->InitializeFloatArray(data_in, 3*416*416);
+    OCLBuffer *bufImg = manager->InitializeFloatArray(data_img, 3*416*416);
+    PrintOCLBuffer(bufImg, manager, "bufImg_before.bin",  3*416*416);
 
     // after the InitializaFloatArray call, data stored in dataIn has been copied to variable buf which resides in gpu.
     OCLBuffer *bufImg9x = manager->InitializeFloatArray(data_in, 27*416*416);
+    PrintOCLBuffer(bufImg9x, manager, "bufImg9x_before.bin",  27*416*416);
 
-    // after the InitializaFloatArray call, data stored in data_col has been copied to variable databuf_out which resides in gpu.
-    OCLBuffer *databuf_out = manager->InitializeFloatArray(data_col, 16*416*416);
+    // after the InitializaFloatArray call, data stored in data_out has been copied to variable databuf_out which resides in gpu.
+    OCLBuffer *databuf_out = manager->InitializeFloatArray(data_out, 16*416*416);
+    PrintOCLBuffer(databuf_out, manager, "databuf_out_before.bin",  16*416*416);
 
     OCLBuffer *weights_gpu = manager->InitializeFloatArray(kernel_weights, 16*27);
-
+    PrintOCLBuffer(weights_gpu, manager, "weights_gpu.bin", 16*27);
 
     //float OCLManager::ConvertImageToColumnArray(OCLBuffer *im, int channels, int height, int width,
     //                                                int ksize, int stride, int pad, OCLBuffer *data_col)
 
     manager->ConvertImageToColumnArray(bufImg, 3, 416, 416, 3, 1, 1, bufImg9x);
 
-
     int m = 16;
     int k = 27;
     int n = 416*416;
 
 
-    manager->ComputeGEMM(false, false, 16, 173506, 27, 1.0f, weights_gpu, 0, k,
+    manager->ComputeGEMM(false, false, m, 173506, 27, 1.0f, weights_gpu, 0, k,
                            bufImg9x, 0, n , 1.0f, databuf_out, 0, n);
 
-    PrintOCLBuffer(databuf_out, manager, "databuf_out.bin",  16*416*416);
+    PrintOCLBuffer(databuf_out, manager, "databuf_out_after.bin",  16*416*416);
 
 
 
@@ -118,7 +147,6 @@ const float beta, OCLBuffer *bufferC, const size_t offsetC, const size_t ldC)
 
 
     DEL_(data_in);
-    DEL_(data_col);
     DEL_(data_out);
     DEL_(m_ResizedImage);
     DEL_(manager);
