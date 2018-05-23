@@ -67,11 +67,14 @@ OCLManager::~OCLManager() {
 
 	//clblasTeardown();
 	for( int i = 0; i < NN_MAX_KERNEL_COUNT; i++ )
-		delete m_OpenCLKernels[i];
-
-	delete m_OpenCLProgram;
-
-	
+	    if(NULL != m_OpenCLKernels) {
+            delete m_OpenCLKernels[i];
+            m_OpenCLKernels[i] = NULL;
+        }
+    if(NULL != m_OpenCLProgram) {
+        delete m_OpenCLProgram;
+        m_OpenCLProgram = NULL;
+	}
 	m_Status = OCL_STATUS_FINALIZED;
 }
 
