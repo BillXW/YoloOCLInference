@@ -250,5 +250,5 @@ public:
 
 };
 
-
+void PrintOCLBuffer(OCLBuffer *inBuffer, OCLManager *oclManager, char* fileName, int numItems);
 #endif

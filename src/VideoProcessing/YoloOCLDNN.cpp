@@ -1197,7 +1197,7 @@ void YOLONeuralNet::ComputeYOLONNOutput(char* inputFile) {
 	cvDestroyAllWindows();
 }
 
-void PrintOCLBuffer(OCLBuffer *inBuffer, OCLManager *oclManager, char* fileName, int numItems) {
+ void PrintOCLBuffer(OCLBuffer *inBuffer, OCLManager *oclManager, char* fileName, int numItems) {
 
 	
 	float *verfArray = (float*)calloc(numItems, sizeof(float));
