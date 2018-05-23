@@ -77,7 +77,7 @@ OCLManager::~OCLManager() {
 
 int OCLManager::Initialize() {
 
-	std::string file = ExePath() + "/../src/Kernels/DeepNNFP32.cl";
+	std::string file = ExePath() + "/../../src/Kernels/DeepNNFP32.cl";
 	std::vector<std::string> kernelFiles;
 	kernelFiles.push_back(file);
 
