@@ -37,7 +37,7 @@ int zeroCount(float *array, int len){
 }
 
 
-BOOST_AUTO_TEST_CASE(kernel7x7) {
+BOOST_AUTO_TEST_CASE(kernel3x3) {
     StructImage	*m_ResizedImage = new StructImage();
 
     m_ResizedImage->m_C = 3;
@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE(kernel7x7) {
     int count = 0;
     for(int i =0; i<16; i++) {
         for(int j=0; j<27; j++) {
-            kernel_weights[i*27+j] = 444;
+            kernel_weights[i*27+j] = 1;
             count++;
         }
     }
@@ -117,13 +117,14 @@ BOOST_AUTO_TEST_CASE(kernel7x7) {
     //                                                int ksize, int stride, int pad, OCLBuffer *data_col)
 
     manager->ConvertImageToColumnArray(bufImg, 3, 416, 416, 3, 1, 1, bufImg9x);
+    PrintOCLBuffer(bufImg9x, manager, "bufImg9x_after.bin",  27*416*416);
 
     int m = 16;
     int k = 27;
     int n = 416*416;
 
 
-    manager->ComputeGEMM(false, false, m, 173506, 27, 1.0f, weights_gpu, 0, k,
+    manager->ComputeGEMM(false, false, m, 416*416, 27, 1.0f, weights_gpu, 0, k,
                            bufImg9x, 0, n , 1.0f, databuf_out, 0, n);
 
     PrintOCLBuffer(databuf_out, manager, "databuf_out_after.bin",  16*416*416);
