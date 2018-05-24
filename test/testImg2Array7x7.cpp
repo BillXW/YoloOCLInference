@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(kernel7x7) {
     int out_w = ((in_w + 2*padding - kernel_size) / stride) + 1;
     int out_h = ((in_h + 2*padding - kernel_size) / stride)+ 1;
 
-    int m = out_ch * in_ch * kernel_size * kernel_size; // 16 * 3 * 7 * 7
+    int m = out_ch; // 16
     int n =  out_w * out_h; // (412 * 412)
     int k = in_ch * kernel_size * kernel_size ; // 3 * 7 * 7
 
@@ -77,32 +77,38 @@ BOOST_AUTO_TEST_CASE(kernel7x7) {
     float * kernel_weights = new float[out_ch * in_ch * kernel_size * kernel_size]; // 16 * 3 * 7 * 7
 
 
-    initArray<float>(data_img, in_h, in_w, 1.0f) ;
+    initArray<float> (data_img, in_ch, in_w*in_h, 1.0f) ;
     initArray<float> (data_img9x, in_ch * kernel_size * kernel_size, out_w * out_h, 1.0f);
-    initArray<float> (data_out, out_ch, out_w * out_h, 1.0);
+    initArray<float> (data_out, out_ch, out_w * out_h, 0.0f);
     initArray<float> (kernel_weights, out_ch, in_ch * kernel_size* kernel_size, 1.0);
 
 
     OCLManager *manager = new OCLManager();
     manager->Initialize();
 
-    OCLBuffer *bufImg = manager->InitializeFloatArray(data_img, in_ch * kernel_size * kernel_size); // 3*416*416
-    PrintOCLBuffer(bufImg, manager, "bufImg_before7x7.bin",  in_ch * kernel_size * kernel_size);
+    OCLBuffer *bufImg = manager->InitializeFloatArray(data_img, in_ch * in_w * in_h); // 3*416*416
+    PrintOCLBuffer(bufImg, manager, "bufImg_before7x7.bin",  in_ch * in_w * in_h);
 
     OCLBuffer *bufImg9x = manager->InitializeFloatArray(data_img9x, in_ch * kernel_size * kernel_size * out_w * out_h);
-    PrintOCLBuffer(bufImg, manager, "bufImg9x_before7x7.bin",  in_ch * kernel_size * kernel_size * out_w * out_h);
+    PrintOCLBuffer(bufImg9x, manager, "bufImg9x_before7x7.bin",  in_ch * kernel_size * kernel_size * out_w * out_h);
 
 
     OCLBuffer *buf_out = manager->InitializeFloatArray(data_out, out_ch * out_w * out_h);
-    PrintOCLBuffer(buf_out, manager, "buff_out7x7_before.bin", out_ch * out_w * out_h);
+    PrintOCLBuffer(buf_out, manager, "buf_out_before7x7.bin", out_ch * out_w * out_h);
 
-    OCLBuffer *weights_gpu = manager->InitializeFloatArray(kernel_weights, in_ch * kernel_size * kernel_size);
+    OCLBuffer *weights_gpu = manager->InitializeFloatArray(kernel_weights, out_ch * in_ch * kernel_size * kernel_size);
+    PrintOCLBuffer(weights_gpu, manager, "weights_gpu7x7.bin", out_ch * in_ch * kernel_size * kernel_size);
 
+    //manager->ConvertImageToColumnArray(bufImg, 3, 416, 416, 3, 1, 1, bufImg9x);
+    //PrintOCLBuffer(bufImg9x, manager, "bufImg9x_after.bin",  27*416*416);
+
+    manager->ConvertImageToColumnArray(bufImg, in_ch, in_w, in_h, kernel_size, stride, padding, bufImg9x);
+    PrintOCLBuffer(bufImg9x, manager, "bufImg9x_after.bin",  in_ch * kernel_size * kernel_size * out_w * out_h);
 
     manager->ComputeGEMM(false, false, m, n, k, 1.0f, weights_gpu, 0, k,
                          bufImg9x, 0, n , 1.0f, buf_out, 0, n);
+    PrintOCLBuffer(buf_out, manager, "buf_out_after7x7.bin",  out_ch * out_w * out_h);
 
-    PrintOCLBuffer(buf_out, manager, "buf_out_after7x7.bin",  16*416*416);
 
 }
 
