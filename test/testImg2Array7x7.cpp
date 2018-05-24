@@ -36,7 +36,77 @@ int zeroCount(float *array, int len){
     return count;
 }
 
+template<typename T>
 
+int initArray(T* array, int rowNum, int colNum, T value ,bool is_rand = false) {
+    int count = 0;
+    for(int i=0; i<rowNum; i++) {
+        for(int j =0; j<colNum; j++) {
+            count ++;
+            if(!is_rand) {
+                array[i * colNum + j] = value;
+            } else {
+                array[i*colNum+j] = rand01;
+            }
+        }
+    }
+    return count;
+}
+
+
+BOOST_AUTO_TEST_CASE(kernel7x7) {
+    int in_ch = 3;
+    int in_w = 416;
+    int in_h = 416;
+    int stride = 1;
+    int padding = 1;
+    int kernel_size = 7;
+
+    int out_ch = 16;
+    int out_w = ((in_w + 2*padding - kernel_size) / stride) + 1;
+    int out_h = ((in_h + 2*padding - kernel_size) / stride)+ 1;
+
+    int m = out_ch * in_ch * kernel_size * kernel_size; // 16 * 3 * 7 * 7
+    int n =  out_w * out_h; // (412 * 412)
+    int k = in_ch * kernel_size * kernel_size ; // 3 * 7 * 7
+
+
+    float *data_img = new float[in_ch * in_w * in_h]; // 3 * 416 * 416
+    float *data_img9x = new float[in_ch * kernel_size * kernel_size * out_w * out_h]; // (3 * 7 * 7) * (412 * 412)
+    float *data_out = new float[out_ch * out_w * out_h]; // 16 * 412 * 412
+    float * kernel_weights = new float[out_ch * in_ch * kernel_size * kernel_size]; // 16 * 3 * 7 * 7
+
+
+    initArray<float>(data_img, in_h, in_w, 1.0f) ;
+    initArray<float> (data_img9x, in_ch * kernel_size * kernel_size, out_w * out_h, 1.0f);
+    initArray<float> (data_out, out_ch, out_w * out_h, 1.0);
+    initArray<float> (kernel_weights, out_ch, in_ch * kernel_size* kernel_size, 1.0);
+
+
+    OCLManager *manager = new OCLManager();
+    manager->Initialize();
+
+    OCLBuffer *bufImg = manager->InitializeFloatArray(data_img, in_ch * kernel_size * kernel_size); // 3*416*416
+    PrintOCLBuffer(bufImg, manager, "bufImg_before7x7.bin",  in_ch * kernel_size * kernel_size);
+
+    OCLBuffer *bufImg9x = manager->InitializeFloatArray(data_img9x, in_ch * kernel_size * kernel_size * out_w * out_h);
+    PrintOCLBuffer(bufImg, manager, "bufImg9x_before7x7.bin",  in_ch * kernel_size * kernel_size * out_w * out_h);
+
+
+    OCLBuffer *buf_out = manager->InitializeFloatArray(data_out, out_ch * out_w * out_h);
+    PrintOCLBuffer(buf_out, manager, "buff_out7x7_before.bin", out_ch * out_w * out_h);
+
+    OCLBuffer *weights_gpu = manager->InitializeFloatArray(kernel_weights, in_ch * kernel_size * kernel_size);
+
+
+    manager->ComputeGEMM(false, false, m, n, k, 1.0f, weights_gpu, 0, k,
+                         bufImg9x, 0, n , 1.0f, buf_out, 0, n);
+
+    PrintOCLBuffer(buf_out, manager, "buf_out_after7x7.bin",  16*416*416);
+
+}
+
+/*
 BOOST_AUTO_TEST_CASE(kernel3x3) {
     StructImage	*m_ResizedImage = new StructImage();
 
@@ -63,7 +133,7 @@ BOOST_AUTO_TEST_CASE(kernel3x3) {
     for(int i =0; i<3; i++) {
         for(int j=0; j < 173056; j++){
             //data_img[i*3+j] = (i+1)/1.f;
-            data_img[i*173056+j] = 111;
+            data_img[i*173056+j] = 1;
             data_img_count ++ ;
         }
     }
@@ -71,7 +141,7 @@ BOOST_AUTO_TEST_CASE(kernel3x3) {
 
     for(int i=0; i<27; i++) {
         for(int j=0; j<173056; j++){
-            data_in[i*173056+j] = 222;
+            data_in[i*173056+j] = 1;
         }
     }
     std::cout << "data_in zero count is: " << zeroCount(data_in, 27*416*416) << std::endl;
@@ -79,7 +149,7 @@ BOOST_AUTO_TEST_CASE(kernel3x3) {
     for(int i=0; i<16; i++){
         for(int j=0; j<173056; j++){
             float tmp = rand()%255 + 100;
-            data_out[i*173056 + j] = 333;
+            data_out[i*173056 + j] = 0;
         }
     }
 
@@ -123,28 +193,23 @@ BOOST_AUTO_TEST_CASE(kernel3x3) {
     int k = 27;
     int n = 416*416;
 
-
     manager->ComputeGEMM(false, false, m, 416*416, 27, 1.0f, weights_gpu, 0, k,
                            bufImg9x, 0, n , 1.0f, databuf_out, 0, n);
 
     PrintOCLBuffer(databuf_out, manager, "databuf_out_after.bin",  16*416*416);
 
+//float OCLManager::ComputeGEMM(bool isATransponsed, bool isBTransposed, const size_t m, const size_t n, const size_t k,
+//const float alpha, OCLBuffer *bufferA, const size_t offsetA, const size_t ldA, OCLBuffer *bufferB, const size_t offsetB, ldB,
+//const float beta, OCLBuffer *bufferC, const size_t offsetC, const size_t ldC)
 
 
-/*
-float OCLManager::ComputeGEMM(bool isATransponsed, bool isBTransposed, const size_t m, const size_t n, const size_t k,
-const float alpha, OCLBuffer *bufferA, const size_t offsetA, const size_t ldA, OCLBuffer *bufferB, const size_t offsetB, ldB,
-const float beta, OCLBuffer *bufferC, const size_t offsetC, const size_t ldC)
-*/
 
 
-/*
-    timeAccumulator += m_OCLManager->ConvertImageToColumnArray(netState->m_InputGpu, inLayer->m_C, inLayer->m_H,
-                inLayer->m_W, inLayer->m_Size, inLayer->m_Stride, inLayer->m_Pad, netState->m_Workspace);
+//    timeAccumulator += m_OCLManager->ConvertImageToColumnArray(netState->m_InputGpu, inLayer->m_C, inLayer->m_H,
+//                inLayer->m_W, inLayer->m_Size, inLayer->m_Stride, inLayer->m_Pad, netState->m_Workspace);
 
-    timeAccumulator += m_OCLManager->ComputeGEMM(false, false, m, n, k, 1.0f, inLayer->m_Weights_Gpu, 0, k,
-                netState->m_Workspace, 0, n, 1.0f, inLayer->m_OutputSwapGPUBuffers[netState->m_ConvSwapBufIdx], 0, n);
-*/
+//    timeAccumulator += m_OCLManager->ComputeGEMM(false, false, m, n, k, 1.0f, inLayer->m_Weights_Gpu, 0, k,
+//                netState->m_Workspace, 0, n, 1.0f, inLayer->m_OutputSwapGPUBuffers[netState->m_ConvSwapBufIdx], 0, n);
 
 
     DEL_(data_in);
@@ -156,11 +221,8 @@ const float beta, OCLBuffer *bufferC, const size_t offsetC, const size_t ldC)
     DEL_(databuf_out);
     DEL_(weights_gpu);
 
-
-
-
 }
-
+*/
 
 /*
 BOOST_AUTO_TEST_CASE(PassTest) {
