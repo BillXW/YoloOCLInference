@@ -109,6 +109,7 @@ BOOST_AUTO_TEST_CASE(kernel7x7) {
                          bufImg9x, 0, n , 1.0f, buf_out, 0, n);
     PrintOCLBuffer(buf_out, manager, "buf_out_after7x7.bin",  out_ch * out_w * out_h);
 
+
     DEL_(data_img);
     DEL_(data_img9x);
     DEL_(data_out);
@@ -118,6 +119,7 @@ BOOST_AUTO_TEST_CASE(kernel7x7) {
     DEL_(buf_out);
     DEL_(weights_gpu);
     DEL_(manager);
+
 }
 
 
