@@ -19,6 +19,9 @@ typedef enum {
 	LOGISTIC, RELU, RELIE, LINEAR, RAMP, TANH, PLSE, LEAKY, ELU, LOGGY, STAIR, HARDTAN, LHTAN
 }ACTIVATION;
 
+
+// The size of data_col is :  in_ch * ksize * ksize * height_col * width_col.
+// The size of index is : in_ch * ksize * ksize
 __kernel void image2columarray3x3(int n, __global float* data_im,
 	int height, int width, int ksize, const int pad, int stride, int height_col, int width_col, 
 	__global float *data_col,__global int * debug) {

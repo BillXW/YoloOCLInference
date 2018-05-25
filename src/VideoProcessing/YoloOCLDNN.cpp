@@ -245,7 +245,8 @@ bool YOLONeuralNet::PrepareConvolutionalTypeLayer(int sectionIdx, int layerIdx, 
 				m_YOLODeepNN->m_Layers[layerIdx].m_OutW * m_YOLODeepNN->m_Layers[layerIdx].m_N);
 	}
 
-	m_YOLODeepNN->m_Layers[layerIdx].m_Workspace_Size = m_YOLODeepNN->m_Layers[layerIdx].m_OutH * m_YOLODeepNN->m_Layers[layerIdx].m_OutW *
+	//m_Workspace_Size is equal to bufImg9x in unit test.It equal to  the size of the result of img2col.
+    m_YOLODeepNN->m_Layers[layerIdx].m_Workspace_Size = m_YOLODeepNN->m_Layers[layerIdx].m_OutH * m_YOLODeepNN->m_Layers[layerIdx].m_OutW *
 		m_YOLODeepNN->m_Layers[layerIdx].m_Size * m_YOLODeepNN->m_Layers[layerIdx].m_Size * m_YOLODeepNN->m_Layers[layerIdx].m_C * sizeof(float);
 	m_YOLODeepNN->m_Layers[layerIdx].m_Activation = activation;
 
